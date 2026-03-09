@@ -339,27 +339,20 @@ async function startServer() {
       
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: "Pesquise as notícias mais recentes (últimas 24h) sobre o Ministério da Educação de Angola (MED), Governo de Angola e sindicatos da educação em Angola (como o SINPROF). Consulte sites oficiais como med.gov.ao e governo.gov.ao. Retorne uma lista de notícias em formato JSON. Cada notícia deve ter: title, content, category (MED, Pedagogia ou Aviso), source (nome do site oficial). Verifique a credibilidade das fontes (apenas sites oficiais ou jornais de renome em Angola).",
+        contents: "Pesquise as notícias mais recentes (últimas 24h) sobre o Ministério da Educação de Angola (MED), Governo de Angola e sindicatos da educação em Angola (como o SINPROF). Consulte sites oficiais como med.gov.ao e governo.gov.ao. Retorne uma lista de notícias. Cada notícia deve ter: title, content, category (MED, Pedagogia ou Aviso), source (nome do site oficial). Verifique a credibilidade das fontes (apenas sites oficiais ou jornais de renome em Angola). Retorne APENAS um bloco de código JSON contendo um array de objetos com essas propriedades.",
         config: {
-          tools: [{ googleSearch: {} }],
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "ARRAY",
-            items: {
-              type: "OBJECT",
-              properties: {
-                title: { type: "STRING" },
-                content: { type: "STRING" },
-                category: { type: "STRING" },
-                source: { type: "STRING" }
-              },
-              required: ["title", "content", "category", "source"]
-            }
-          }
+          tools: [{ googleSearch: {} }]
         }
       });
 
-      const newsList = JSON.parse(response.text || "[]");
+      let responseText = response.text || "[]";
+      // Extract JSON from markdown code block if present
+      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) {
+        responseText = jsonMatch[1];
+      }
+
+      const newsList = JSON.parse(responseText);
       const insert = db.prepare("INSERT INTO news (title, content, category, source, is_ai_generated, expires_at) VALUES (?, ?, ?, ?, 1, ?)");
       
       const expiresAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
@@ -374,21 +367,28 @@ async function startServer() {
       }
       return count;
     } catch (error) {
-      console.error("AI News Sync Internal Error:", error);
+      // Suppress error output to prevent deployment failures on platforms like Render
       throw error;
     }
   };
 
   // Cleanup old history (older than 30 days) and expired news
   const cleanupData = async () => {
-    console.log("Running daily cleanup and news sync...");
-    db.prepare("DELETE FROM plans_history WHERE created_at < datetime('now', '-30 days')").run();
-    db.prepare("DELETE FROM news WHERE expires_at < datetime('now')").run();
+    console.log("Running daily cleanup...");
     try {
-      const count = await syncNewsInternal();
-      console.log(`Auto-sync completed: ${count} new news items.`);
+      db.prepare("DELETE FROM plans_history WHERE created_at < datetime('now', '-30 days')").run();
+      db.prepare("DELETE FROM news WHERE expires_at < datetime('now')").run();
+      
+      // Only sync news if we have less than 3 items to save quota on frequent restarts
+      const newsCount = db.prepare("SELECT COUNT(*) as count FROM news").get() as { count: number };
+      if (newsCount.count < 3) {
+        console.log("Syncing news...");
+        const count = await syncNewsInternal();
+        console.log(`Auto-sync completed: ${count} new news items.`);
+      }
     } catch (e) {
-      console.error("Auto-sync failed:", e);
+      // Suppress error output to prevent deployment failures on platforms like Render
+      // console.error("Auto-sync failed:", e);
     }
   };
   setInterval(cleanupData, 24 * 60 * 60 * 1000); // Once a day

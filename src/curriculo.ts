@@ -40,13 +40,63 @@ export const curriculo: Record<string, any> = {
         "Educação Musical": { "TEMA 1": { "Geral": ["Ritmo e Pulsação", "Hino Nacional"] } },
         "Educação Física": { "TEMA 1": { "Geral": ["Ginástica Básica", "Atletismo Infantil"] } }
     },
-    "2ª Classe": {
-        "Língua Portuguesa": { "TEMA 1": { "Geral": ["A Minha Escola", "A Minha Família"] } },
-        "Matemática": { "TEMA 1": { "Geral": ["Números até 100", "Subtracção"] } },
-        "Estudo do Meio": { "TEMA 1": { "Geral": ["A Descoberta de Ti Mesmo"] } },
-        "Educação Manual e Plástica": { "TEMA 1": { "Geral": ["Modelagem", "Pintura com Guache"] } },
-        "Educação Musical": { "TEMA 1": { "Geral": ["Instrumentos de Percussão", "Melodia"] } },
-        "Educação Física": { "TEMA 1": { "Geral": ["Jogos Colectivos", "Equilíbrio"] } }
+    "1ª Classe": {
+        "Língua Portuguesa": {
+            "TEMA 1 - QUEM SOU EU?": [
+                "Eu sou",
+                "Eu chamo-me",
+                "Identificar pessoas",
+                "Expressões de delicadeza",
+                "Grafismos",
+                "História: O Sapo e o Ovo"
+        ],
+            "TEMA 2 – A MINHA FAMÍLIA E EU": [
+                "A família da Ana",
+                "O alfabeto",
+                "Estudo da letra I",
+                "Estudo da letra O",
+                "Estudo da letra U",
+                "Estudo da letra E",
+                "Estudo da letra A",
+                "Vogais nasais",
+                "Ditongos orais",
+                "Ditongos nasais"
+        ],
+            "TEMA 3 – EU VOU À ESCOLA": [
+                "Estudo da letra P",
+                "Estudo da letra B",
+                "Estudo da letra M",
+                "Estudo da letra T",
+                "Estudo da letra D",
+                "Estudo da letra Ç",
+                "Estudo da letra S",
+                "Estudo da letra Z"
+        ],
+            "TEMA 4 – O MEU CORPO E EU": [
+                "Estudo da letra N",
+                "Estudo da letra L",
+                "Estudo da letra X",
+                "Estudo da letra F",
+                "Higiene corporal",
+                "Estudo da letra V",
+                "Estudo da letra G",
+                "Estudo da letra J",
+                "Estudo da letra C",
+                "Estudo da letra Q",
+                "Estudo da letra R"
+            ],
+            "TEMA 5 – OS ANIMAIS QUE EU CONHEÇO": [
+                "Estudo da letra H",
+                "Estudo da letra Y",
+                "Estudo da letra W",
+                "Som NH",
+                "Som LH",
+                "Som CH",
+                "Som AR",
+                "Som OL",
+                "Som AM",
+                "Som UM"
+            ]
     },
     "3ª Classe": {
         "Língua Portuguesa": { "TEMA 1": { "Geral": ["Leitura e Compreensão"] } },

@@ -183,11 +183,16 @@ async function startServer() {
   try { db.exec("ALTER TABLE news ADD COLUMN is_ai_generated INTEGER DEFAULT 0"); } catch(e) {}
   try { db.exec("ALTER TABLE news ADD COLUMN expires_at TEXT"); } catch(e) {}
 
-  // Initialize curriculum if empty
+  // Initialize curriculum if empty or force update
   const curriculumCount = db.prepare("SELECT COUNT(*) as count FROM curriculum").get() as { count: number };
-  if (curriculumCount.count === 0) {
-    console.log("Initializing curriculum from static file...");
+  const forceUpdateCurriculum = false; // Set to true to force update from src/curriculo.ts
+  
+  if (curriculumCount.count === 0 || forceUpdateCurriculum) {
+    console.log("Initializing/Updating curriculum from static file...");
     try {
+      if (forceUpdateCurriculum) {
+        db.prepare("DELETE FROM curriculum").run();
+      }
       const { curriculo } = await import('./src/curriculo.ts');
       const insert = db.prepare("INSERT INTO curriculum (classe, disciplina, tema, subtema, sumarios) VALUES (?, ?, ?, ?, ?)");
       
@@ -200,7 +205,7 @@ async function startServer() {
           }
         }
       }
-      console.log("Curriculum initialized.");
+      console.log("Curriculum initialized/updated.");
     } catch (e) {
       console.error("Error initializing curriculum:", e);
     }

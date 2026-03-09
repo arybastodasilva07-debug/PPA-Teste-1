@@ -36,13 +36,14 @@ async function startServer() {
     dotenv.config();
     console.log("Starting server initialization...");
   // Use a persistent path for the database in production
+  const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
   const dbPath = process.env.NODE_ENV === 'production' 
-    ? path.join('/app/data', 'ppa.db') 
+    ? path.join(dataDir, 'ppa.db') 
     : 'ppa.db';
     
   // Ensure data directory exists in production
-  if (process.env.NODE_ENV === 'production' && !fs.existsSync('/app/data')) {
-    fs.mkdirSync('/app/data', { recursive: true });
+  if (process.env.NODE_ENV === 'production' && !fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
   }
 
   const db = new Database(dbPath);
@@ -645,7 +646,7 @@ async function startServer() {
   // Library Routes
   // Use a persistent path for library files in production
   const libraryPath = process.env.NODE_ENV === 'production' 
-    ? path.join('/app/data', 'biblioteca') 
+    ? path.join(dataDir, 'biblioteca') 
     : path.join(__dirname, "public", "biblioteca");
   const FOLDER_DOCS = "Centrais de Documentos";
   const CLASSES_NOMES = ["Iniciação", "1ª Classe", "2ª Classe", "3ª Classe", "4ª Classe", "5ª Classe", "6ª Classe"];

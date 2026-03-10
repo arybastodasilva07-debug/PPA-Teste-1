@@ -1706,7 +1706,7 @@ const LibraryView = () => {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900 truncate">{file.name}</p>
                   <p className="text-xs text-gray-500 uppercase tracking-wider truncate">
-                    {searchQuery.trim() && file.path ? file.path.replace(/^\//, '') : (file.type === 'directory' ? 'Pasta' : 'Documento PDF')}
+                    {searchQuery.trim() && file.path ? file.path.replace(/^\//, '') : (file.type === 'directory' ? 'Pasta' : 'Documento')}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1760,11 +1760,19 @@ const LibraryView = () => {
                 </button>
               </div>
               <div className="flex-1">
-                <iframe 
-                  src={`data:application/pdf;base64,${viewingFile.base64}`}
-                  className="w-full h-full border-none"
-                  title="PDF Viewer"
-                />
+                {viewingFile.name.endsWith('.txt') ? (
+                  <iframe 
+                    src={`data:text/plain;base64,${viewingFile.base64}`}
+                    className="w-full h-full border-none bg-white p-4"
+                    title="Document Viewer"
+                  />
+                ) : (
+                  <iframe 
+                    src={`data:application/pdf;base64,${viewingFile.base64}`}
+                    className="w-full h-full border-none"
+                    title="PDF Viewer"
+                  />
+                )}
               </div>
             </motion.div>
           </motion.div>

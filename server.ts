@@ -681,6 +681,22 @@ async function startServer() {
   const oldDocsPath = path.join(libraryPath, "Central_Documentos");
   if (fs.existsSync(oldDocsPath)) fs.rmSync(oldDocsPath, { recursive: true, force: true });
   
+  const ESTRUTURA_ROOT: Record<string, string[] | null> = {
+    "Manuais INIDE": ["Iniciação", "1ª Classe", "2ª Classe", "3ª Classe", "4ª Classe", "5ª Classe", "6ª Classe"]
+  };
+
+  // Create Root folders from ESTRUTURA_ROOT
+  Object.entries(ESTRUTURA_ROOT).forEach(([folder, subs]) => {
+    const p = path.join(libraryPath, folder);
+    if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+    if (subs) {
+      subs.forEach(sub => {
+        const sp = path.join(p, sub);
+        if (!fs.existsSync(sp)) fs.mkdirSync(sp, { recursive: true });
+      });
+    }
+  });
+
   // Create Classes folders
   CLASSES_NOMES.forEach(c => {
     const p = path.join(libraryPath, c);

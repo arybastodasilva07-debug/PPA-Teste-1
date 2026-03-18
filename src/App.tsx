@@ -1520,7 +1520,9 @@ const LibraryView = () => {
   const getCurrentFolder = () => {
     let current = files;
     
-    if (activeTab === 'central') {
+    if (activeTab === 'manuais') {
+      current = files.find(f => f.name === 'Manuais INIDE')?.children || [];
+    } else if (activeTab === 'central') {
       current = files.find(f => f.name === 'Centrais de Documentos')?.children || [];
     }
 
@@ -1752,12 +1754,26 @@ const LibraryView = () => {
             >
               <div className="p-4 border-b flex items-center justify-between bg-gray-50">
                 <h3 className="font-bold text-gray-900">{viewingFile.name}</h3>
-                <button 
-                  onClick={() => setViewingFile(null)}
-                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                >
-                  <X size={20} />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = viewingFile.name.endsWith('.txt') ? `data:text/plain;base64,${viewingFile.base64}` : `data:application/pdf;base64,${viewingFile.base64}`;
+                      link.download = viewingFile.name;
+                      link.click();
+                    }}
+                    className="p-2 hover:bg-emerald-100 text-emerald-600 rounded-full transition-colors"
+                    title="Baixar"
+                  >
+                    <Download size={20} />
+                  </button>
+                  <button 
+                    onClick={() => setViewingFile(null)}
+                    className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
               <div className="flex-1">
                 {viewingFile.name.endsWith('.txt') ? (
